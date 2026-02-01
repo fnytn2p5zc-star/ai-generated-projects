@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next
+out
+
+# Production
+build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+.env
+
+# IDE
+.idea
+.vscode
+
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+docker-compose*.yml
+Dockerfile*
+
+# Database files (local dev)
+prisma/*.db
+prisma/*.db-journal

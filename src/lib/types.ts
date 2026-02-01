@@ -1,0 +1,67 @@
+import { z } from 'zod'
+
+export const TaskStatus = {
+  TODO: 'TODO',
+  IN_PROGRESS: 'IN_PROGRESS',
+  REVIEW: 'REVIEW',
+  DONE: 'DONE',
+} as const
+
+export type TaskStatusType = (typeof TaskStatus)[keyof typeof TaskStatus]
+
+export const Priority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+} as const
+
+export type PriorityType = (typeof Priority)[keyof typeof Priority]
+
+export const taskStatuses = Object.values(TaskStatus)
+export const priorities = Object.values(Priority)
+
+export const createTaskSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200),
+  description: z.string().max(2000).optional(),
+  status: z.enum(['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE']).default('TODO'),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH']).default('MEDIUM'),
+  dueDate: z.string().datetime().optional().nullable(),
+})
+
+export const updateTaskSchema = createTaskSchema.partial().extend({
+  id: z.string(),
+  position: z.number().int().min(0).optional(),
+})
+
+export const createNoteSchema = z.object({
+  taskId: z.string(),
+  title: z.string().min(1, 'Title is required').max(200),
+  content: z.string().default(''),
+})
+
+export const updateNoteSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1).max(200).optional(),
+  content: z.string().optional(),
+})
+
+export const learningPlanSchema = z.object({
+  taskId: z.string(),
+  objectives: z.array(z.string()).default([]),
+  resources: z.array(z.object({
+    title: z.string(),
+    url: z.string().url().optional(),
+    type: z.enum(['article', 'video', 'book', 'course', 'other']).default('other'),
+  })).default([]),
+  milestones: z.array(z.object({
+    title: z.string(),
+    completed: z.boolean().default(false),
+    dueDate: z.string().datetime().optional().nullable(),
+  })).default([]),
+})
+
+export type CreateTaskInput = z.infer<typeof createTaskSchema>
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>
+export type CreateNoteInput = z.infer<typeof createNoteSchema>
+export type UpdateNoteInput = z.infer<typeof updateNoteSchema>
+export type LearningPlanInput = z.infer<typeof learningPlanSchema>

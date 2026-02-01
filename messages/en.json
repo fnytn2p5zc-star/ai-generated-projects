@@ -1,0 +1,74 @@
+{
+  "common": {
+    "appName": "Learning Management",
+    "search": "Search",
+    "settings": "Settings",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "noResults": "No results found"
+  },
+  "navigation": {
+    "board": "Board",
+    "search": "Search",
+    "settings": "Settings"
+  },
+  "task": {
+    "title": "Title",
+    "description": "Description",
+    "status": "Status",
+    "priority": "Priority",
+    "dueDate": "Due Date",
+    "createTask": "Create Task",
+    "editTask": "Edit Task",
+    "deleteTask": "Delete Task",
+    "deleteConfirm": "Are you sure you want to delete this task?",
+    "statuses": {
+      "TODO": "To Do",
+      "IN_PROGRESS": "In Progress",
+      "REVIEW": "Review",
+      "DONE": "Done"
+    },
+    "priorities": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    }
+  },
+  "learningPlan": {
+    "title": "Learning Plan",
+    "objectives": "Objectives",
+    "resources": "Resources",
+    "milestones": "Milestones",
+    "addObjective": "Add Objective",
+    "addResource": "Add Resource",
+    "addMilestone": "Add Milestone",
+    "noObjectives": "No objectives yet",
+    "noResources": "No resources yet",
+    "noMilestones": "No milestones yet"
+  },
+  "notes": {
+    "title": "Notes",
+    "noteTitle": "Note Title",
+    "content": "Content",
+    "createNote": "Create Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "noNotes": "No notes yet"
+  },
+  "search": {
+    "placeholder": "Search tasks and notes...",
+    "results": "Search Results",
+    "inTask": "in task"
+  },
+  "settings": {
+    "language": "Language",
+    "theme": "Theme",
+    "lightMode": "Light",
+    "darkMode": "Dark"
+  }
+}

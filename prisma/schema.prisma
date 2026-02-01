@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      String        @default("TODO") // TODO, IN_PROGRESS, REVIEW, DONE
+  priority    String        @default("MEDIUM") // LOW, MEDIUM, HIGH
+  dueDate     DateTime?
+  position    Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  learningPlan LearningPlan?
+  notes        Note[]
+}
+
+model LearningPlan {
+  id         String   @id @default(cuid())
+  taskId     String   @unique
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  objectives String   @default("[]") // JSON array
+  resources  String   @default("[]") // JSON array
+  milestones String   @default("[]") // JSON array
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @default("") // Markdown content
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+}

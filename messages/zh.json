@@ -1,0 +1,74 @@
+{
+  "common": {
+    "appName": "学习管理系统",
+    "search": "搜索",
+    "settings": "设置",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "loading": "加载中...",
+    "error": "发生错误",
+    "noResults": "没有找到结果"
+  },
+  "navigation": {
+    "board": "看板",
+    "search": "搜索",
+    "settings": "设置"
+  },
+  "task": {
+    "title": "标题",
+    "description": "描述",
+    "status": "状态",
+    "priority": "优先级",
+    "dueDate": "截止日期",
+    "createTask": "创建任务",
+    "editTask": "编辑任务",
+    "deleteTask": "删除任务",
+    "deleteConfirm": "确定要删除这个任务吗？",
+    "statuses": {
+      "TODO": "待办",
+      "IN_PROGRESS": "进行中",
+      "REVIEW": "审核",
+      "DONE": "完成"
+    },
+    "priorities": {
+      "LOW": "低",
+      "MEDIUM": "中",
+      "HIGH": "高"
+    }
+  },
+  "learningPlan": {
+    "title": "学习计划",
+    "objectives": "学习目标",
+    "resources": "学习资源",
+    "milestones": "里程碑",
+    "addObjective": "添加目标",
+    "addResource": "添加资源",
+    "addMilestone": "添加里程碑",
+    "noObjectives": "暂无学习目标",
+    "noResources": "暂无学习资源",
+    "noMilestones": "暂无里程碑"
+  },
+  "notes": {
+    "title": "笔记",
+    "noteTitle": "笔记标题",
+    "content": "内容",
+    "createNote": "创建笔记",
+    "editNote": "编辑笔记",
+    "deleteNote": "删除笔记",
+    "noNotes": "暂无笔记"
+  },
+  "search": {
+    "placeholder": "搜索任务和笔记...",
+    "results": "搜索结果",
+    "inTask": "在任务中"
+  },
+  "settings": {
+    "language": "语言",
+    "theme": "主题",
+    "lightMode": "浅色",
+    "darkMode": "深色"
+  }
+}
