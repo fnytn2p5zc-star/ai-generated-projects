@@ -104,6 +104,21 @@ export function TaskDetail({ task }: TaskDetailProps) {
     }
   }
 
+  const handleStatusChange = async (newStatus: TaskStatusType) => {
+    setFormData({ ...formData, status: newStatus })
+
+    await updateTask({
+      id: task.id,
+      title: task.title,
+      description: task.description ?? '',
+      status: newStatus,
+      priority: task.priority as PriorityType,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : null,
+    })
+
+    router.refresh()
+  }
+
   const handleDelete = async () => {
     if (!confirm(t('deleteConfirm'))) return
 
@@ -191,34 +206,26 @@ export function TaskDetail({ task }: TaskDetailProps) {
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label>{t('status')}</Label>
-              {isEditing ? (
-                <Select
-                  value={formData.status}
-                  onValueChange={(value: TaskStatusType) =>
-                    setFormData({ ...formData, status: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(TaskStatus).map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {t(`statuses.${status}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <span
+              <Select
+                value={formData.status}
+                onValueChange={handleStatusChange}
+              >
+                <SelectTrigger
                   className={cn(
-                    'inline-block rounded-full px-3 py-1 text-sm font-medium',
-                    statusColors[task.status as keyof typeof statusColors]
+                    'w-fit',
+                    statusColors[formData.status as keyof typeof statusColors]
                   )}
                 >
-                  {t(`statuses.${task.status}`)}
-                </span>
-              )}
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(TaskStatus).map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {t(`statuses.${status}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

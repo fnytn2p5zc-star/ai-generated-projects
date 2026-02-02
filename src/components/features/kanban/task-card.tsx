@@ -24,9 +24,10 @@ interface TaskCardProps {
 }
 
 const priorityColors = {
-  LOW: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  MEDIUM: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  HIGH: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+  LOW: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200',
+  MEDIUM:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200',
+  HIGH: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200',
 }
 
 export function TaskCard({ task, isDragging }: TaskCardProps) {
@@ -51,54 +52,64 @@ export function TaskCard({ task, isDragging }: TaskCardProps) {
     return new Date(date).toLocaleDateString()
   }
 
+  const isActiveDragging = isDragging || isSortableDragging
+
   return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'cursor-grab transition-shadow hover:shadow-md',
-        (isDragging || isSortableDragging) && 'opacity-50 shadow-lg'
-      )}
-    >
-      <CardHeader className="p-3 pb-2">
-        <div className="flex items-start gap-2">
-          <button
-            {...attributes}
-            {...listeners}
-            className="mt-0.5 cursor-grab touch-none text-muted-foreground hover:text-foreground"
-          >
-            <GripVertical className="h-4 w-4" />
-          </button>
-          <Link href={`/tasks/${task.id}`} className="flex-1">
-            <CardTitle className="text-sm font-medium hover:underline">
+    <div ref={setNodeRef} style={style} className="group relative">
+      <Link href={`/tasks/${task.id}`} className="block">
+        <Card
+          className={cn(
+            'min-h-[120px] transition-all duration-200',
+            'hover:-translate-y-0.5 hover:shadow-card-hover',
+            isActiveDragging &&
+              'rotate-2 scale-105 opacity-90 shadow-drag'
+          )}
+        >
+          <CardHeader className="p-3 pb-2">
+            <CardTitle className="text-sm font-medium leading-tight pr-6">
               {task.title}
             </CardTitle>
-          </Link>
-        </div>
-      </CardHeader>
-      <CardContent className="p-3 pt-0">
-        {task.description && (
-          <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
-            {task.description}
-          </p>
-        )}
-        <div className="flex items-center justify-between">
-          <span
-            className={cn(
-              'rounded-full px-2 py-0.5 text-xs font-medium',
-              priorityColors[task.priority as keyof typeof priorityColors]
+          </CardHeader>
+          <CardContent className="p-3 pt-0">
+            {task.description && (
+              <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                {task.description}
+              </p>
             )}
-          >
-            {t(`priorities.${task.priority}`)}
-          </span>
-          {task.dueDate && (
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Calendar className="h-3 w-3" />
-              {formatDate(task.dueDate)}
-            </span>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <div className="flex items-center justify-between gap-2">
+              <span
+                className={cn(
+                  'rounded-full px-2 py-0.5 text-xs font-medium',
+                  priorityColors[task.priority as keyof typeof priorityColors]
+                )}
+              >
+                {t(`priorities.${task.priority}`)}
+              </span>
+              {task.dueDate && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Calendar className="h-3 w-3" />
+                  {formatDate(task.dueDate)}
+                </span>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Drag handle in bottom-right corner */}
+      <button
+        {...attributes}
+        {...listeners}
+        className={cn(
+          'absolute bottom-2 right-2 z-10 cursor-grab touch-none rounded p-1 text-muted-foreground/50 transition-all',
+          'hover:bg-muted hover:text-foreground',
+          'group-hover:text-muted-foreground',
+          isActiveDragging && 'cursor-grabbing text-primary'
+        )}
+        onClick={(e) => e.preventDefault()}
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+    </div>
   )
 }

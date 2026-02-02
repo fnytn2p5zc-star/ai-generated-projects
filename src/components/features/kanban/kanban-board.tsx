@@ -5,14 +5,18 @@ import { useTranslations } from 'next-intl'
 import {
   DndContext,
   DragOverlay,
-  closestCorners,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
+  pointerWithin,
+  rectIntersection,
+  closestCenter,
   type DragEndEvent,
   type DragStartEvent,
   type DragOverEvent,
+  type CollisionDetection,
 } from '@dnd-kit/core'
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { getTasks, moveTask } from '@/actions/tasks'
@@ -37,6 +41,20 @@ type TaskWithRelations = {
   notes: unknown[]
 }
 
+const customCollisionDetection: CollisionDetection = (args) => {
+  const pointerCollisions = pointerWithin(args)
+  if (pointerCollisions.length > 0) {
+    return pointerCollisions
+  }
+
+  const rectCollisions = rectIntersection(args)
+  if (rectCollisions.length > 0) {
+    return rectCollisions
+  }
+
+  return closestCenter(args)
+}
+
 export function KanbanBoard() {
   const t = useTranslations('task')
   const [tasks, setTasks] = useState<TaskWithRelations[]>([])
@@ -45,9 +63,15 @@ export function KanbanBoard() {
   const [isLoading, setIsLoading] = useState(true)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -83,13 +107,13 @@ export function KanbanBoard() {
     if (!activeTask) return
 
     const overId = over.id as string
-    const isOverColumn = Object.values(TaskStatus).includes(overId as TaskStatusType)
+    const isOverColumn = Object.values(TaskStatus).includes(
+      overId as TaskStatusType
+    )
 
     if (isOverColumn && activeTask.status !== overId) {
       setTasks((prev) =>
-        prev.map((t) =>
-          t.id === active.id ? { ...t, status: overId } : t
-        )
+        prev.map((t) => (t.id === active.id ? { ...t, status: overId } : t))
       )
     }
   }
@@ -106,10 +130,13 @@ export function KanbanBoard() {
     const task = tasks.find((t) => t.id === activeId)
     if (!task) return
 
-    const isOverColumn = Object.values(TaskStatus).includes(overId as TaskStatusType)
+    const isOverColumn = Object.values(TaskStatus).includes(
+      overId as TaskStatusType
+    )
     const newStatus = isOverColumn
       ? (overId as TaskStatusType)
-      : (tasks.find((t) => t.id === overId)?.status as TaskStatusType) ?? task.status
+      : ((tasks.find((t) => t.id === overId)?.status as TaskStatusType) ??
+        task.status)
 
     const tasksInColumn = tasks.filter((t) => t.status === newStatus)
     let newPosition: number
@@ -147,9 +174,9 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-end">
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => setIsCreateOpen(true)} className="shadow-sm">
           <Plus className="mr-2 h-4 w-4" />
           {t('createTask')}
         </Button>
@@ -157,12 +184,12 @@ export function KanbanBoard() {
 
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={customCollisionDetection}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {columns.map((column) => (
             <KanbanColumn
               key={column.id}
@@ -173,7 +200,12 @@ export function KanbanBoard() {
           ))}
         </div>
 
-        <DragOverlay>
+        <DragOverlay
+          dropAnimation={{
+            duration: 200,
+            easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+          }}
+        >
           {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
         </DragOverlay>
       </DndContext>
