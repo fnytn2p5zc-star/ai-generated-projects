@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import { cn } from '@/lib/utils'
+import { VideoEmbed } from '@/components/ui/video-embed'
+import { isVideoUrl } from '@/lib/video-parser'
 
 interface MarkdownRendererProps {
   content: string
@@ -83,6 +85,27 @@ export function MarkdownRenderer({
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeHighlight]}
+        components={{
+          a: ({ href, children }) => {
+            if (href && isVideoUrl(href)) {
+              return (
+                <div className="my-4">
+                  <VideoEmbed url={href} />
+                </div>
+              )
+            }
+            return (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:no-underline"
+              >
+                {children}
+              </a>
+            )
+          },
+        }}
       >
         {content}
       </ReactMarkdown>
