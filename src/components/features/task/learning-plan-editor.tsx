@@ -6,6 +6,9 @@ import { useTranslations } from 'next-intl'
 import { Plus, Trash2, ExternalLink, Check } from 'lucide-react'
 import { upsertLearningPlan } from '@/actions/learning-plans'
 import { Button } from '@/components/ui/button'
+import { VideoEmbed } from '@/components/ui/video-embed'
+import { LinkPreview } from '@/components/ui/link-preview'
+import { isVideoUrl } from '@/lib/video-parser'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -190,36 +193,52 @@ export function LearningPlanEditor({
             <p className="text-sm text-muted-foreground">{t('noResources')}</p>
           ) : (
             <ul className="space-y-2">
-              {resources.map((resource, index) => (
-                <li
-                  key={index}
-                  className="flex items-center justify-between rounded-md bg-muted p-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="rounded bg-background px-2 py-0.5 text-xs">
-                      {resource.type}
-                    </span>
-                    <span className="text-sm">{resource.title}</span>
-                    {resource.url && (
-                      <a
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </a>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeResource(index)}
+              {resources.map((resource, index) => {
+                const showVideoEmbed = resource.type === 'video' && resource.url && isVideoUrl(resource.url)
+                const showLinkPreview = resource.type === 'article' && resource.url
+                return (
+                  <li
+                    key={index}
+                    className="rounded-md bg-muted p-2"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-background px-2 py-0.5 text-xs">
+                          {resource.type}
+                        </span>
+                        <span className="text-sm">{resource.title}</span>
+                        {resource.url && (
+                          <a
+                            href={resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeResource(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {showVideoEmbed && (
+                      <div className="mt-2">
+                        <VideoEmbed url={resource.url!} title={resource.title} />
+                      </div>
+                    )}
+                    {showLinkPreview && (
+                      <div className="mt-2">
+                        <LinkPreview url={resource.url!} />
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           )}
           <div className="flex gap-2">
