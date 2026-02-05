@@ -227,100 +227,116 @@ export function TaskDetail({ task }: TaskDetailProps) {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>{t('status')}</Label>
-              <Select
-                value={formData.status}
-                onValueChange={handleStatusChange}
-              >
-                <SelectTrigger
-                  className={cn(
-                    'w-fit',
-                    statusColors[formData.status as keyof typeof statusColors]
-                  )}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(TaskStatus).map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {t(`statuses.${status}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('priority')}</Label>
-              {isEditing ? (
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: PriorityType) =>
-                    setFormData({ ...formData, priority: value })
+        <CardContent>
+          {isEditing ? (
+            <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">{t('status')}</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={handleStatusChange}
+                  >
+                    <SelectTrigger className={cn('h-8 w-fit text-xs', statusColors[formData.status as keyof typeof statusColors])}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(TaskStatus).map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {t(`statuses.${status}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t('priority')}</Label>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value: PriorityType) =>
+                      setFormData({ ...formData, priority: value })
+                    }
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(Priority).map((priority) => (
+                        <SelectItem key={priority} value={priority}>
+                          {t(`priorities.${priority}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">{t('dueDate')}</Label>
+                  <Input
+                    type="date"
+                    value={formData.dueDate}
+                    onChange={(e) =>
+                      setFormData({ ...formData, dueDate: e.target.value })
+                    }
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t('description')}</Label>
+                <Textarea
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
                   }
+                  rows={2}
+                  className="text-sm"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                <Select
+                  value={formData.status}
+                  onValueChange={handleStatusChange}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger
+                    className={cn(
+                      'h-7 w-fit gap-1 border-none px-2.5 text-xs font-medium',
+                      statusColors[formData.status as keyof typeof statusColors]
+                    )}
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.values(Priority).map((priority) => (
-                      <SelectItem key={priority} value={priority}>
-                        {t(`priorities.${priority}`)}
+                    {Object.values(TaskStatus).map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {t(`statuses.${status}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              ) : (
                 <span
                   className={cn(
-                    'inline-block rounded-full px-3 py-1 text-sm font-medium',
+                    'inline-block rounded-full px-2.5 py-0.5 text-xs font-medium',
                     priorityColors[task.priority as keyof typeof priorityColors]
                   )}
                 >
                   {t(`priorities.${task.priority}`)}
                 </span>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('dueDate')}</Label>
-              {isEditing ? (
-                <Input
-                  type="date"
-                  value={formData.dueDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dueDate: e.target.value })
-                  }
-                />
-              ) : (
-                <p className="text-sm">
-                  {task.dueDate
-                    ? new Date(task.dueDate).toLocaleDateString()
-                    : '-'}
+                {task.dueDate && (
+                  <span className="text-xs text-muted-foreground">
+                    {t('dueDate')}: {new Date(task.dueDate).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              {task.description && (
+                <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+                  {task.description}
                 </p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t('description')}</Label>
-            {isEditing ? (
-              <Textarea
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                rows={4}
-              />
-            ) : (
-              <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-                {task.description || '-'}
-              </p>
-            )}
-          </div>
+          )}
         </CardContent>
       </Card>
 
