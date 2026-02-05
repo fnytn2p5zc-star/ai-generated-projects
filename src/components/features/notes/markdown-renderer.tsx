@@ -2,7 +2,10 @@
 
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import rehypeHighlight from 'rehype-highlight'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import { cn } from '@/lib/utils'
 import { VideoEmbed } from '@/components/ui/video-embed'
 import { isVideoUrl } from '@/lib/video-parser'
@@ -38,8 +41,8 @@ export function MarkdownRenderer({
         }}
       >
         <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeHighlight, rehypeKatex]}
           components={{
             h1: ({ children }) => (
               <span className="font-bold">{children}</span>
@@ -83,8 +86,8 @@ export function MarkdownRenderer({
   return (
     <div className={cn('prose-content', className)}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeHighlight, rehypeKatex]}
         components={{
           a: ({ href, children }) => {
             if (href && isVideoUrl(href)) {
