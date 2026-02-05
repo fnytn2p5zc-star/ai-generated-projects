@@ -33,6 +33,10 @@ interface CategoryOnTask {
   color: string
 }
 
+interface LearningPlanData {
+  milestones: string
+}
+
 type TaskWithRelations = {
   id: string
   title: string
@@ -43,9 +47,21 @@ type TaskWithRelations = {
   position: number
   createdAt: Date
   updatedAt: Date
-  learningPlan: unknown | null
+  learningPlan: LearningPlanData | null
   notes: unknown[]
   categories: CategoryOnTask[]
+}
+
+function parseMilestoneProgress(learningPlan: LearningPlanData | null): { completed: number; total: number } | undefined {
+  if (!learningPlan?.milestones) return undefined
+  try {
+    const milestones = JSON.parse(learningPlan.milestones) as Array<{ completed: boolean }>
+    if (milestones.length === 0) return undefined
+    const completed = milestones.filter((m) => m.completed).length
+    return { completed, total: milestones.length }
+  } catch {
+    return undefined
+  }
 }
 
 interface KanbanBoardProps {
@@ -169,6 +185,10 @@ export function KanbanBoard({ categoryId, onTasksChanged }: KanbanBoardProps) {
     return tasks
       .filter((task) => task.status === status)
       .sort((a, b) => a.position - b.position)
+      .map((task) => ({
+        ...task,
+        milestoneProgress: parseMilestoneProgress(task.learningPlan),
+      }))
   }
 
   const columns = [
@@ -219,7 +239,15 @@ export function KanbanBoard({ categoryId, onTasksChanged }: KanbanBoardProps) {
             easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
           }}
         >
-          {activeTask ? <TaskCard task={activeTask} isDragging /> : null}
+          {activeTask ? (
+            <TaskCard
+              task={{
+                ...activeTask,
+                milestoneProgress: parseMilestoneProgress(activeTask.learningPlan),
+              }}
+              isDragging
+            />
+          ) : null}
         </DragOverlay>
       </DndContext>
 

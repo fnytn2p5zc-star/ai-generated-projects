@@ -27,6 +27,7 @@
     "editTask": "Edit Task",
     "deleteTask": "Delete Task",
     "deleteConfirm": "Are you sure you want to delete this task?",
+    "deleteConfirmTitle": "Delete Task",
     "statuses": {
       "TODO": "To Do",
       "IN_PROGRESS": "In Progress",
@@ -49,7 +50,15 @@
     "addMilestone": "Add Milestone",
     "noObjectives": "No objectives yet",
     "noResources": "No resources yet",
-    "noMilestones": "No milestones yet"
+    "noMilestones": "No milestones yet",
+    "complete": "Complete",
+    "undo": "Undo",
+    "dueDate": "Due",
+    "deleteObjectiveConfirm": "Are you sure you want to remove this objective?",
+    "deleteResourceConfirm": "Are you sure you want to remove this resource?",
+    "deleteMilestoneConfirm": "Are you sure you want to remove this milestone?",
+    "completedAt": "Completed: {date}",
+    "deleteConfirmTitle": "Confirm Deletion"
   },
   "notes": {
     "title": "Notes",

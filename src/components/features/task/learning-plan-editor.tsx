@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Plus, Trash2, ExternalLink, Check } from 'lucide-react'
+import { Plus, Trash2, ExternalLink, Check, Rocket } from 'lucide-react'
 import { upsertLearningPlan } from '@/actions/learning-plans'
 import { Button } from '@/components/ui/button'
 import { VideoEmbed } from '@/components/ui/video-embed'
@@ -19,7 +19,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
+
+interface Objective {
+  text: string
+  completed: boolean
+}
 
 interface Resource {
   title: string
@@ -31,12 +47,13 @@ interface Milestone {
   title: string
   completed: boolean
   dueDate?: string
+  completedAt?: string | null
 }
 
 interface LearningPlan {
   id: string
   taskId: string
-  objectives: string[]
+  objectives: Objective[]
   resources: Resource[]
   milestones: Milestone[]
 }
@@ -57,7 +74,7 @@ export function LearningPlanEditor({
   const tCommon = useTranslations('common')
   const router = useRouter()
 
-  const [objectives, setObjectives] = useState<string[]>(
+  const [objectives, setObjectives] = useState<Objective[]>(
     initialPlan?.objectives ?? []
   )
   const [resources, setResources] = useState<Resource[]>(
@@ -67,6 +84,7 @@ export function LearningPlanEditor({
     initialPlan?.milestones ?? []
   )
   const [isSaving, setIsSaving] = useState(false)
+  const [animatingMilestone, setAnimatingMilestone] = useState<number | null>(null)
 
   const [newObjective, setNewObjective] = useState('')
   const [newResource, setNewResource] = useState<Resource>({
@@ -100,13 +118,21 @@ export function LearningPlanEditor({
 
   const addObjective = () => {
     if (newObjective.trim()) {
-      setObjectives([...objectives, newObjective.trim()])
+      setObjectives([...objectives, { text: newObjective.trim(), completed: false }])
       setNewObjective('')
     }
   }
 
   const removeObjective = (index: number) => {
     setObjectives(objectives.filter((_, i) => i !== index))
+  }
+
+  const toggleObjective = (index: number) => {
+    setObjectives(
+      objectives.map((o, i) =>
+        i === index ? { ...o, completed: !o.completed } : o
+      )
+    )
   }
 
   const addResource = () => {
@@ -135,10 +161,23 @@ export function LearningPlanEditor({
   }
 
   const toggleMilestone = (index: number) => {
+    const milestone = milestones[index]
+    const nowCompleted = !milestone.completed
+
+    if (nowCompleted) {
+      setAnimatingMilestone(index)
+      setTimeout(() => setAnimatingMilestone(null), 1000)
+    }
+
     setMilestones(
-      milestones.map((m, i) =>
-        i === index ? { ...m, completed: !m.completed } : m
-      )
+      milestones.map((m, i) => {
+        if (i !== index) return m
+        return {
+          ...m,
+          completed: nowCompleted,
+          completedAt: nowCompleted ? new Date().toISOString() : null,
+        }
+      })
     )
   }
 
@@ -162,14 +201,51 @@ export function LearningPlanEditor({
                   key={index}
                   className="flex items-center justify-between rounded-md bg-muted p-2"
                 >
-                  <span className="text-sm">{objective}</span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeObjective(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => toggleObjective(index)}
+                      role="checkbox"
+                      aria-checked={objective.completed}
+                      aria-label={objective.text}
+                      className={cn(
+                        'flex h-5 w-5 items-center justify-center rounded border',
+                        objective.completed
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-muted-foreground'
+                      )}
+                    >
+                      {objective.completed && <Check className="h-3 w-3" />}
+                    </button>
+                    <span
+                      className={cn(
+                        'text-sm',
+                        objective.completed && 'line-through opacity-50'
+                      )}
+                    >
+                      {objective.text}
+                    </span>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t('deleteObjectiveConfirm')}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => removeObjective(index)}>
+                          {tCommon('delete')}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </li>
               ))}
             </ul>
@@ -218,13 +294,27 @@ export function LearningPlanEditor({
                           </a>
                         )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeResource(index)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t('deleteResourceConfirm')}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => removeResource(index)}>
+                              {tCommon('delete')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                     {showVideoEmbed && (
                       <div className="mt-2">
@@ -290,20 +380,19 @@ export function LearningPlanEditor({
               {milestones.map((milestone, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between rounded-md bg-muted p-2"
+                  className="relative flex items-center justify-between overflow-hidden rounded-md bg-muted p-2"
                 >
+                  {animatingMilestone === index && (
+                    <Rocket
+                      className="absolute animate-[rocket-launch_1s_ease-out_forwards] text-orange-500"
+                      style={{
+                        right: '0',
+                        top: '50%',
+                        transform: 'translateY(-50%) rotate(-90deg)',
+                      }}
+                    />
+                  )}
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => toggleMilestone(index)}
-                      className={cn(
-                        'flex h-5 w-5 items-center justify-center rounded border',
-                        milestone.completed
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-muted-foreground'
-                      )}
-                    >
-                      {milestone.completed && <Check className="h-3 w-3" />}
-                    </button>
                     <span
                       className={cn(
                         'text-sm',
@@ -317,14 +406,55 @@ export function LearningPlanEditor({
                         ({new Date(milestone.dueDate).toLocaleDateString()})
                       </span>
                     )}
+                    {milestone.completed && milestone.completedAt && (
+                      <span className="text-xs text-green-600">
+                        ✓ {new Date(milestone.completedAt).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeMilestone(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    {!milestone.completed && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleMilestone(index)}
+                        className="text-xs"
+                      >
+                        {t('complete')}
+                      </Button>
+                    )}
+                    {milestone.completed && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleMilestone(index)}
+                        className="text-xs text-muted-foreground"
+                      >
+                        {t('undo')}
+                      </Button>
+                    )}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t('deleteMilestoneConfirm')}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => removeMilestone(index)}>
+                            {tCommon('delete')}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                 </li>
               ))}
             </ul>

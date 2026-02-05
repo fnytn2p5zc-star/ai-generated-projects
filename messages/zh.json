@@ -27,6 +27,7 @@
     "editTask": "编辑任务",
     "deleteTask": "删除任务",
     "deleteConfirm": "确定要删除这个任务吗？",
+    "deleteConfirmTitle": "删除任务",
     "statuses": {
       "TODO": "待办",
       "IN_PROGRESS": "进行中",
@@ -49,7 +50,15 @@
     "addMilestone": "添加里程碑",
     "noObjectives": "暂无学习目标",
     "noResources": "暂无学习资源",
-    "noMilestones": "暂无里程碑"
+    "noMilestones": "暂无里程碑",
+    "complete": "完成",
+    "undo": "撤销",
+    "dueDate": "截止",
+    "deleteObjectiveConfirm": "确定要移除这个学习目标吗？",
+    "deleteResourceConfirm": "确定要移除这个学习资源吗？",
+    "deleteMilestoneConfirm": "确定要移除这个里程碑吗？",
+    "completedAt": "完成于：{date}",
+    "deleteConfirmTitle": "确认删除"
   },
   "notes": {
     "title": "笔记",

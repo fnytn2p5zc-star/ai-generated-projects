@@ -603,3 +603,14 @@
     transform: translateY(0);
   }
 }
+
+@keyframes rocket-launch {
+  0% {
+    right: 0;
+    opacity: 1;
+  }
+  100% {
+    right: 100%;
+    opacity: 0;
+  }
+}

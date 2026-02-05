@@ -24,6 +24,17 @@ import { LearningPlanEditor } from './learning-plan-editor'
 import { NotesSection } from '../notes/notes-section'
 import { FloatingNoteWindow } from '../notes/floating-note-window'
 import { CategoryPicker } from '../category/category-picker'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { cn } from '@/lib/utils'
 
 interface CategoryOnTask {
@@ -133,8 +144,6 @@ export function TaskDetail({ task }: TaskDetailProps) {
   }
 
   const handleDelete = async () => {
-    if (!confirm(t('deleteConfirm'))) return
-
     setIsDeleting(true)
     const result = await deleteTask(task.id)
 
@@ -160,20 +169,33 @@ export function TaskDetail({ task }: TaskDetailProps) {
   }, [])
 
   const parsedLearningPlan = task.learningPlan
-    ? {
-        ...task.learningPlan,
-        objectives: JSON.parse(task.learningPlan.objectives) as string[],
-        resources: JSON.parse(task.learningPlan.resources) as Array<{
-          title: string
-          url?: string
-          type: 'article' | 'video' | 'book' | 'course' | 'other'
-        }>,
-        milestones: JSON.parse(task.learningPlan.milestones) as Array<{
-          title: string
-          completed: boolean
-          dueDate?: string
-        }>,
-      }
+    ? (() => {
+        try {
+          const rawObjectives = JSON.parse(task.learningPlan.objectives) as Array<string | { text: string; completed: boolean }>
+          const objectives = rawObjectives.map((item) =>
+            typeof item === 'string'
+              ? { text: item, completed: false }
+              : item
+          )
+          return {
+            ...task.learningPlan,
+            objectives,
+            resources: JSON.parse(task.learningPlan.resources) as Array<{
+              title: string
+              url?: string
+              type: 'article' | 'video' | 'book' | 'course' | 'other'
+            }>,
+            milestones: JSON.parse(task.learningPlan.milestones) as Array<{
+              title: string
+              completed: boolean
+              dueDate?: string
+              completedAt?: string | null
+            }>,
+          }
+        } catch {
+          return null
+        }
+      })()
     : null
 
   return (
@@ -208,14 +230,28 @@ export function TaskDetail({ task }: TaskDetailProps) {
                 <Pencil className="mr-2 h-4 w-4" />
                 {tCommon('edit')}
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                {tCommon('delete')}
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" disabled={isDeleting}>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {tCommon('delete')}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t('deleteConfirm')}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{tCommon('cancel')}</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      {tCommon('delete')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           )}
         </div>

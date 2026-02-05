@@ -47,7 +47,10 @@ export const updateNoteSchema = z.object({
 
 export const learningPlanSchema = z.object({
   taskId: z.string(),
-  objectives: z.array(z.string()).default([]),
+  objectives: z.array(z.object({
+    text: z.string(),
+    completed: z.boolean().default(false),
+  })).default([]),
   resources: z.array(z.object({
     title: z.string(),
     url: z.string().url().optional(),
@@ -57,6 +60,7 @@ export const learningPlanSchema = z.object({
     title: z.string(),
     completed: z.boolean().default(false),
     dueDate: z.string().datetime().optional().nullable(),
+    completedAt: z.string().optional().nullable(),
   })).default([]),
 })
 

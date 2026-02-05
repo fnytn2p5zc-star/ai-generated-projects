@@ -18,6 +18,10 @@ interface Task {
   dueDate: Date | null
   position: number
   categories?: { id: string; name: string; color: string }[]
+  milestoneProgress?: {
+    completed: number
+    total: number
+  }
 }
 
 interface KanbanColumnProps {

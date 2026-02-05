@@ -50,8 +50,14 @@ src/
 
 ## 功能
 
-- **看板视图**: 以 Todo / In Progress / Done 状态管理学习任务
+- **看板视图**: 以 Todo / In Progress / Review / Done 状态管理学习任务
 - **拖拽排序**: 支持任务在列之间拖拽
+- **学习计划**: 每个任务支持设置学习目标（Objectives）、资源（Resources）和里程碑（Milestones）
+  - 目标支持勾选完成状态
+  - 里程碑完成时记录时间戳，带火箭发射动画
+  - 卡片上显示里程碑进度（如 1/4）
 - **Markdown 笔记**: 每个任务支持 Markdown 格式的学习笔记
 - **多语言**: 支持中英文切换
-- **分类管理**: 按学习方向组织任务
+- **分类管理**: 按学习方向组织任务，支持分组
+- **主题系统**: 支持 Default / RPG / Ocean / Forest / Cyberpunk / Dracula 主题，明暗模式切换
+- **删除确认**: 所有删除操作使用 AlertDialog 确认，防止误操作

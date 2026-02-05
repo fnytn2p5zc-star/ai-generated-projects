@@ -3,7 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useTranslations } from 'next-intl'
-import { Calendar, GripVertical } from 'lucide-react'
+import { Calendar, GripVertical, Flag } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,10 @@ interface Task {
   dueDate: Date | null
   position: number
   categories?: CategoryOnTask[]
+  milestoneProgress?: {
+    completed: number
+    total: number
+  }
 }
 
 interface TaskCardProps {
@@ -84,14 +88,29 @@ export function TaskCard({ task, isDragging }: TaskCardProps) {
               </p>
             )}
             <div className="flex items-center justify-between gap-2">
-              <span
-                className={cn(
-                  'rounded-full px-2 py-0.5 text-xs font-medium',
-                  priorityColors[task.priority as keyof typeof priorityColors]
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-xs font-medium',
+                    priorityColors[task.priority as keyof typeof priorityColors]
+                  )}
+                >
+                  {t(`priorities.${task.priority}`)}
+                </span>
+                {task.milestoneProgress && task.milestoneProgress.total > 0 && (
+                  <span
+                    className={cn(
+                      'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
+                      task.milestoneProgress.completed === task.milestoneProgress.total
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300'
+                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                    )}
+                  >
+                    <Flag className="h-3 w-3" />
+                    {task.milestoneProgress.completed}/{task.milestoneProgress.total}
+                  </span>
                 )}
-              >
-                {t(`priorities.${task.priority}`)}
-              </span>
+              </div>
               {task.dueDate && (
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Calendar className="h-3 w-3" />
