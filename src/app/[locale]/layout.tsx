@@ -17,8 +17,9 @@ const themeInitScript = `
     var s = localStorage.getItem('lm-theme-preference');
     if (s) {
       var p = JSON.parse(s);
-      if (p.theme === 'rpg') {
-        document.documentElement.setAttribute('data-theme', 'rpg');
+      var valid = ['rpg','ocean','forest','cyberpunk','dracula'];
+      if (valid.indexOf(p.theme) !== -1) {
+        document.documentElement.setAttribute('data-theme', p.theme);
         if (p.mode === 'dark') document.documentElement.classList.add('dark');
       }
     }

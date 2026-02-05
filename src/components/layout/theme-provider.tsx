@@ -9,8 +9,17 @@ import {
   type ReactNode,
 } from 'react'
 
-export type ThemeName = 'default' | 'rpg'
+export type ThemeName = 'default' | 'rpg' | 'ocean' | 'forest' | 'cyberpunk' | 'dracula'
 export type ThemeMode = 'light' | 'dark'
+
+const VALID_THEMES: ReadonlyArray<ThemeName> = [
+  'default',
+  'rpg',
+  'ocean',
+  'forest',
+  'cyberpunk',
+  'dracula',
+]
 
 interface ThemeContextValue {
   readonly theme: ThemeName
@@ -23,13 +32,17 @@ const STORAGE_KEY = 'lm-theme-preference'
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
+function isValidTheme(value: unknown): value is ThemeName {
+  return typeof value === 'string' && VALID_THEMES.includes(value as ThemeName)
+}
+
 function readStoredPreference(): { theme: ThemeName; mode: ThemeMode } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as { theme?: string; mode?: string }
       return {
-        theme: parsed.theme === 'rpg' ? 'rpg' : 'default',
+        theme: isValidTheme(parsed.theme) ? parsed.theme : 'default',
         mode: parsed.mode === 'dark' ? 'dark' : 'light',
       }
     }
@@ -47,17 +60,14 @@ function writeStoredPreference(theme: ThemeName, mode: ThemeMode): void {
   }
 }
 
-// Dark mode is only supported for RPG theme. Default theme always uses light mode.
-// The .dark CSS variables in globals.css exist for the base Tailwind setup but are
-// not user-accessible for the default theme.
 function applyThemeToDOM(theme: ThemeName, mode: ThemeMode): void {
   const html = document.documentElement
-  if (theme === 'rpg') {
-    html.setAttribute('data-theme', 'rpg')
+  if (theme !== 'default') {
+    html.setAttribute('data-theme', theme)
   } else {
     html.removeAttribute('data-theme')
   }
-  if (theme === 'rpg' && mode === 'dark') {
+  if (theme !== 'default' && mode === 'dark') {
     html.classList.add('dark')
   } else {
     html.classList.remove('dark')
