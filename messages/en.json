@@ -85,6 +85,16 @@
     "noCategories": "No categories yet",
     "assignCategories": "Categories"
   },
+  "categoryGroup": {
+    "create": "New Group",
+    "edit": "Edit Group",
+    "delete": "Delete Group",
+    "deleteConfirm": "Delete this group? Categories will not be deleted, they will become ungrouped.",
+    "name": "Name",
+    "namePlaceholder": "Enter group name",
+    "noGroup": "No Group",
+    "ungrouped": "Ungrouped"
+  },
   "settings": {
     "language": "Language",
     "theme": "Theme",

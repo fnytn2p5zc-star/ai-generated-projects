@@ -69,6 +69,17 @@ export const updateCategorySchema = z.object({
   id: z.string(),
   name: z.string().min(1).max(100).optional(),
   color: z.string().optional(),
+  groupId: z.string().nullable().optional(),
+})
+
+export const createCategoryGroupSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+})
+
+export const updateCategoryGroupSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(100).optional(),
+  position: z.number().int().min(0).optional(),
 })
 
 export const updateTaskCategoriesSchema = z.object({
@@ -84,3 +95,5 @@ export type LearningPlanInput = z.infer<typeof learningPlanSchema>
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>
 export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
 export type UpdateTaskCategoriesInput = z.infer<typeof updateTaskCategoriesSchema>
+export type CreateCategoryGroupInput = z.infer<typeof createCategoryGroupSchema>
+export type UpdateCategoryGroupInput = z.infer<typeof updateCategoryGroupSchema>

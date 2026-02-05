@@ -60,9 +60,14 @@ export async function updateCategory(input: UpdateCategoryInput) {
       return { success: false, error: 'Category not found' }
     }
 
+    const { groupId, ...rest } = data
+    const updateData = groupId !== undefined
+      ? { ...rest, groupId: groupId ?? null }
+      : rest
+
     const category = await prisma.category.update({
       where: { id },
-      data,
+      data: updateData,
     })
 
     revalidatePath('/[locale]', 'page')

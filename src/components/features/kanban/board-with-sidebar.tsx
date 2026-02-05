@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { PanelLeftClose, PanelLeft } from 'lucide-react'
-import { getCategories } from '@/actions/categories'
+import { getCategoriesWithGroups } from '@/actions/category-groups'
 import { CategorySidebar } from '../category/category-sidebar'
 import { KanbanBoard } from './kanban-board'
 import { Button } from '@/components/ui/button'
@@ -14,21 +14,29 @@ interface CategoryWithCount {
   name: string
   color: string
   position: number
-  createdAt: Date
-  updatedAt: Date
+  groupId: string | null
   _count: { tasks: number }
+}
+
+interface GroupWithCategories {
+  id: string
+  name: string
+  position: number
+  categories: CategoryWithCount[]
 }
 
 export function BoardWithSidebar() {
   const t = useTranslations('category')
-  const [categories, setCategories] = useState<CategoryWithCount[]>([])
+  const [groups, setGroups] = useState<GroupWithCategories[]>([])
+  const [ungroupedCategories, setUngroupedCategories] = useState<CategoryWithCount[]>([])
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
 
   const loadCategories = useCallback(async () => {
-    const result = await getCategories()
+    const result = await getCategoriesWithGroups()
     if (result.success && result.data) {
-      setCategories(result.data)
+      setGroups(result.data.groups)
+      setUngroupedCategories(result.data.ungrouped)
     }
   }, [])
 
@@ -75,7 +83,8 @@ export function BoardWithSidebar() {
             </Button>
           </div>
           <CategorySidebar
-            categories={categories}
+            groups={groups}
+            ungroupedCategories={ungroupedCategories}
             selectedCategoryId={selectedCategoryId}
             onSelectCategory={(id) => {
               setSelectedCategoryId(id)

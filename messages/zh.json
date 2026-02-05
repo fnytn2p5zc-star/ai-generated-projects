@@ -85,6 +85,16 @@
     "noCategories": "暂无分类",
     "assignCategories": "分类"
   },
+  "categoryGroup": {
+    "create": "新建分组",
+    "edit": "编辑分组",
+    "delete": "删除分组",
+    "deleteConfirm": "删除这个分组？分类不会被删除，会变为未分组。",
+    "name": "名称",
+    "namePlaceholder": "输入分组名称",
+    "noGroup": "无分组",
+    "ungrouped": "未分组"
+  },
   "settings": {
     "language": "语言",
     "theme": "主题",

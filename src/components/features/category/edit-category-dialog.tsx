@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { updateCategory, deleteCategory } from '@/actions/categories'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,13 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -22,16 +29,25 @@ const PRESET_COLORS = [
   '#6B7280', '#78716C',
 ]
 
+const NO_GROUP_VALUE = '__none__'
+
 interface CategoryData {
   id: string
   name: string
   color: string
+  groupId?: string | null
+}
+
+interface GroupOption {
+  id: string
+  name: string
 }
 
 interface EditCategoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   category: CategoryData
+  groups: GroupOption[]
   onSuccess: () => void
 }
 
@@ -39,15 +55,25 @@ export function EditCategoryDialog({
   open,
   onOpenChange,
   category,
+  groups,
   onSuccess,
 }: EditCategoryDialogProps) {
   const t = useTranslations('category')
+  const tGroup = useTranslations('categoryGroup')
   const tCommon = useTranslations('common')
   const [name, setName] = useState(category.name)
   const [color, setColor] = useState(category.color)
+  const [groupId, setGroupId] = useState<string | null>(category.groupId ?? null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setName(category.name)
+    setColor(category.color)
+    setGroupId(category.groupId ?? null)
+    setError(null)
+  }, [category.id, category.name, category.color, category.groupId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,7 +81,12 @@ export function EditCategoryDialog({
     setError(null)
 
     try {
-      const result = await updateCategory({ id: category.id, name, color })
+      const result = await updateCategory({
+        id: category.id,
+        name,
+        color,
+        groupId,
+      })
       if (result.success) {
         onOpenChange(false)
         onSuccess()
@@ -125,6 +156,29 @@ export function EditCategoryDialog({
                 ))}
               </div>
             </div>
+            {groups.length > 0 && (
+              <div className="grid gap-2">
+                <Label>{tGroup('name')}</Label>
+                <Select
+                  value={groupId ?? NO_GROUP_VALUE}
+                  onValueChange={(v) => setGroupId(v === NO_GROUP_VALUE ? null : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_GROUP_VALUE}>
+                      {tGroup('noGroup')}
+                    </SelectItem>
+                    {groups.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>
+                        {g.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter className="flex !justify-between">
