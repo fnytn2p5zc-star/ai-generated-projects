@@ -96,9 +96,17 @@
     "ungrouped": "Ungrouped"
   },
   "settings": {
+    "title": "Settings",
     "language": "Language",
+    "languageDescription": "Select your preferred language",
     "theme": "Theme",
+    "themeDescription": "Customize the appearance of your quest board",
+    "themeDefault": "Default",
+    "themeDefaultDescription": "Clean modern purple theme",
+    "themeRpg": "RPG Adventure",
+    "themeRpgDescription": "Dark fantasy quest board aesthetic",
     "lightMode": "Light",
-    "darkMode": "Dark"
+    "darkMode": "Dark",
+    "colorMode": "Color Mode"
   }
 }

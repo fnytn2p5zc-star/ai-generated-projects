@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LocaleSwitcher } from '@/components/layout/locale-switcher'
+import { ThemeSelector } from '@/components/layout/theme-selector'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -23,7 +24,7 @@ function SettingsContent() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold">{t('language')}</h1>
+      <h1 className="text-2xl font-bold">{t('title')}</h1>
 
       <Card>
         <CardHeader>
@@ -32,10 +33,22 @@ function SettingsContent() {
         <CardContent>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Select your preferred language
+              {t('languageDescription')}
             </p>
             <LocaleSwitcher />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('theme')}</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {t('themeDescription')}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <ThemeSelector />
         </CardContent>
       </Card>
     </div>

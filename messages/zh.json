@@ -96,9 +96,17 @@
     "ungrouped": "未分组"
   },
   "settings": {
+    "title": "设置",
     "language": "语言",
+    "languageDescription": "选择你的首选语言",
     "theme": "主题",
+    "themeDescription": "自定义你的任务板外观",
+    "themeDefault": "默认",
+    "themeDefaultDescription": "简洁现代紫色主题",
+    "themeRpg": "RPG 冒险",
+    "themeRpgDescription": "暗黑奇幻冒险风格",
     "lightMode": "浅色",
-    "darkMode": "深色"
+    "darkMode": "深色",
+    "colorMode": "配色模式"
   }
 }

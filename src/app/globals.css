@@ -59,6 +59,62 @@
     --status-review: 262 83% 50%;
     --status-done: 142 76% 30%;
   }
+
+  /* RPG Theme - Light (Warm parchment) */
+  [data-theme="rpg"] {
+    --background: 39 40% 94%;
+    --foreground: 25 30% 12%;
+    --card: 39 35% 96%;
+    --card-foreground: 25 30% 12%;
+    --popover: 39 35% 96%;
+    --popover-foreground: 25 30% 12%;
+    --primary: 43 96% 56%;
+    --primary-foreground: 25 40% 10%;
+    --secondary: 33 25% 88%;
+    --secondary-foreground: 25 30% 30%;
+    --muted: 33 20% 90%;
+    --muted-foreground: 25 15% 45%;
+    --accent: 43 50% 90%;
+    --accent-foreground: 43 80% 30%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 39 40% 98%;
+    --border: 33 30% 80%;
+    --input: 33 30% 80%;
+    --ring: 43 96% 56%;
+
+    --status-todo: 33 20% 88%;
+    --status-in-progress: 25 90% 55%;
+    --status-review: 270 50% 55%;
+    --status-done: 152 60% 38%;
+  }
+
+  /* RPG Theme - Dark (Tavern dark) */
+  [data-theme="rpg"].dark {
+    --background: 25 25% 8%;
+    --foreground: 39 30% 85%;
+    --card: 25 22% 11%;
+    --card-foreground: 39 30% 85%;
+    --popover: 25 22% 11%;
+    --popover-foreground: 39 30% 85%;
+    --primary: 43 96% 58%;
+    --primary-foreground: 25 30% 8%;
+    --secondary: 25 18% 16%;
+    --secondary-foreground: 39 25% 75%;
+    --muted: 25 18% 16%;
+    --muted-foreground: 30 15% 55%;
+    --accent: 43 40% 18%;
+    --accent-foreground: 43 90% 70%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 39 40% 95%;
+    --border: 30 18% 22%;
+    --input: 30 18% 22%;
+    --ring: 43 96% 58%;
+
+    --status-todo: 25 18% 18%;
+    --status-in-progress: 25 80% 45%;
+    --status-review: 270 40% 40%;
+    --status-done: 152 50% 30%;
+  }
 }
 
 @layer base {
@@ -248,6 +304,88 @@
 .dark .hljs-class .hljs-title,
 .dark .hljs-type {
   color: hsl(25, 95%, 63%);
+}
+
+/* RPG Theme syntax highlighting - Light */
+[data-theme="rpg"] .hljs-keyword,
+[data-theme="rpg"] .hljs-selector-tag,
+[data-theme="rpg"] .hljs-addition {
+  color: hsl(0, 65%, 45%);
+}
+
+[data-theme="rpg"] .hljs-number,
+[data-theme="rpg"] .hljs-string,
+[data-theme="rpg"] .hljs-meta .hljs-meta-string,
+[data-theme="rpg"] .hljs-literal,
+[data-theme="rpg"] .hljs-doctag,
+[data-theme="rpg"] .hljs-regexp {
+  color: hsl(152, 60%, 32%);
+}
+
+[data-theme="rpg"] .hljs-title,
+[data-theme="rpg"] .hljs-section,
+[data-theme="rpg"] .hljs-name,
+[data-theme="rpg"] .hljs-selector-id,
+[data-theme="rpg"] .hljs-selector-class {
+  color: hsl(43, 80%, 40%);
+}
+
+[data-theme="rpg"] .hljs-attribute,
+[data-theme="rpg"] .hljs-attr,
+[data-theme="rpg"] .hljs-variable,
+[data-theme="rpg"] .hljs-template-variable,
+[data-theme="rpg"] .hljs-class .hljs-title,
+[data-theme="rpg"] .hljs-type {
+  color: hsl(25, 80%, 45%);
+}
+
+[data-theme="rpg"] .hljs-symbol,
+[data-theme="rpg"] .hljs-bullet,
+[data-theme="rpg"] .hljs-subst,
+[data-theme="rpg"] .hljs-meta,
+[data-theme="rpg"] .hljs-meta .hljs-keyword,
+[data-theme="rpg"] .hljs-selector-attr,
+[data-theme="rpg"] .hljs-selector-pseudo,
+[data-theme="rpg"] .hljs-link {
+  color: hsl(0, 65%, 45%);
+}
+
+[data-theme="rpg"] .hljs-built_in,
+[data-theme="rpg"] .hljs-deletion {
+  color: hsl(0, 72%, 50%);
+}
+
+/* RPG Theme syntax highlighting - Dark */
+[data-theme="rpg"].dark .hljs-keyword,
+[data-theme="rpg"].dark .hljs-selector-tag,
+[data-theme="rpg"].dark .hljs-addition {
+  color: hsl(0, 60%, 65%);
+}
+
+[data-theme="rpg"].dark .hljs-number,
+[data-theme="rpg"].dark .hljs-string,
+[data-theme="rpg"].dark .hljs-meta .hljs-meta-string,
+[data-theme="rpg"].dark .hljs-literal,
+[data-theme="rpg"].dark .hljs-doctag,
+[data-theme="rpg"].dark .hljs-regexp {
+  color: hsl(152, 55%, 55%);
+}
+
+[data-theme="rpg"].dark .hljs-title,
+[data-theme="rpg"].dark .hljs-section,
+[data-theme="rpg"].dark .hljs-name,
+[data-theme="rpg"].dark .hljs-selector-id,
+[data-theme="rpg"].dark .hljs-selector-class {
+  color: hsl(43, 90%, 60%);
+}
+
+[data-theme="rpg"].dark .hljs-attribute,
+[data-theme="rpg"].dark .hljs-attr,
+[data-theme="rpg"].dark .hljs-variable,
+[data-theme="rpg"].dark .hljs-template-variable,
+[data-theme="rpg"].dark .hljs-class .hljs-title,
+[data-theme="rpg"].dark .hljs-type {
+  color: hsl(25, 85%, 60%);
 }
 
 /* Animations */

@@ -3,11 +3,28 @@ import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { locales, type Locale } from '@/i18n/config'
 import { Header } from '@/components/layout/header'
+import { ThemeProvider } from '@/components/layout/theme-provider'
 import '../globals.css'
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }))
 }
+
+// FOUC prevention: must stay in sync with STORAGE_KEY in theme-provider.tsx
+const themeInitScript = `
+(function(){
+  try {
+    var s = localStorage.getItem('lm-theme-preference');
+    if (s) {
+      var p = JSON.parse(s);
+      if (p.theme === 'rpg') {
+        document.documentElement.setAttribute('data-theme', 'rpg');
+        if (p.mode === 'dark') document.documentElement.classList.add('dark');
+      }
+    }
+  } catch(e) {}
+})();
+`
 
 export default async function LocaleLayout({
   children,
@@ -26,13 +43,18 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <NextIntlClientProvider messages={messages}>
-          <div className="relative flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-          </div>
+          <ThemeProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+            </div>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
