@@ -58,7 +58,15 @@
     "createNote": "Create Note",
     "editNote": "Edit Note",
     "deleteNote": "Delete Note",
-    "noNotes": "No notes yet"
+    "noNotes": "No notes yet",
+    "quickNotes": "Quick Notes",
+    "selectNote": "Select a note...",
+    "createNewNote": "Create New Note",
+    "autoSaved": "Saved",
+    "saving": "Saving...",
+    "saveError": "Save failed",
+    "titleRequired": "Title is required",
+    "deleteConfirm": "Are you sure you want to delete this note?"
   },
   "search": {
     "placeholder": "Search tasks and notes...",

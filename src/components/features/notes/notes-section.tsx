@@ -22,24 +22,32 @@ interface Note {
 
 interface NotesSectionProps {
   taskId: string
-  initialNotes: Note[]
+  notes: Note[]
+  onNoteCreated: (note: Note) => void
+  onNoteUpdated: (note: Note) => void
+  onNoteDeleted: (noteId: string) => void
 }
 
-export function NotesSection({ taskId, initialNotes }: NotesSectionProps) {
+export function NotesSection({
+  taskId,
+  notes,
+  onNoteCreated,
+  onNoteUpdated,
+  onNoteDeleted,
+}: NotesSectionProps) {
   const t = useTranslations('notes')
   const router = useRouter()
 
-  const [notes, setNotes] = useState(initialNotes)
   const [isCreating, setIsCreating] = useState(false)
   const [editingNote, setEditingNote] = useState<Note | null>(null)
   const [previewNote, setPreviewNote] = useState<Note | null>(null)
 
   const handleDelete = async (noteId: string) => {
-    if (!confirm('Are you sure you want to delete this note?')) return
+    if (!confirm(t('deleteConfirm'))) return
 
     const result = await deleteNote(noteId)
     if (result.success) {
-      setNotes(notes.filter((n) => n.id !== noteId))
+      onNoteDeleted(noteId)
       router.refresh()
     }
   }

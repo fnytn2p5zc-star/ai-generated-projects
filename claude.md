@@ -1,13 +1,5 @@
 # Claude Instructions — Personal Learning Quest Board
 
-## Todo Execution Rule (Critical)
-
-- Claude 在任何情况下，**一次响应只允许完成 Todo List 中的 1 项**
-- 即使多个 Todo 之间有关联，也不得在同一次响应中推进
-- 完成该 Todo 后，**必须立刻停止**
-- 不得自动开始、暗中推进或“顺手”处理下一项
-- 下一项 Todo **必须等待我明确指示**
-
 
 ## Response Marker Rule (Test Only)
 

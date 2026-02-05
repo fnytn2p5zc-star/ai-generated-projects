@@ -58,7 +58,15 @@
     "createNote": "创建笔记",
     "editNote": "编辑笔记",
     "deleteNote": "删除笔记",
-    "noNotes": "暂无笔记"
+    "noNotes": "暂无笔记",
+    "quickNotes": "快捷笔记",
+    "selectNote": "选择一个笔记...",
+    "createNewNote": "新建笔记",
+    "autoSaved": "已保存",
+    "saving": "保存中...",
+    "saveError": "保存失败",
+    "titleRequired": "请输入标题",
+    "deleteConfirm": "确定要删除这个笔记吗？"
   },
   "search": {
     "placeholder": "搜索任务和笔记...",

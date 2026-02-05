@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Pencil, Trash2 } from 'lucide-react'
+import { ArrowLeft, Pencil, Trash2, StickyNote } from 'lucide-react'
 import { Link } from '@/i18n/routing'
 import { deleteTask, updateTask } from '@/actions/tasks'
 import { TaskStatus, Priority, type TaskStatusType, type PriorityType } from '@/lib/types'
@@ -22,6 +22,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LearningPlanEditor } from './learning-plan-editor'
 import { NotesSection } from '../notes/notes-section'
+import { FloatingNoteWindow } from '../notes/floating-note-window'
 import { cn } from '@/lib/utils'
 
 interface Task {
@@ -75,6 +76,8 @@ export function TaskDetail({ task }: TaskDetailProps) {
   const tNotes = useTranslations('notes')
   const router = useRouter()
 
+  const [notes, setNotes] = useState(task.notes)
+  const [isFloatingNoteOpen, setIsFloatingNoteOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [formData, setFormData] = useState<{
@@ -132,6 +135,20 @@ export function TaskDetail({ task }: TaskDetailProps) {
     }
   }
 
+  const handleNoteCreated = useCallback((note: typeof notes[number]) => {
+    setNotes((prev) => [note, ...prev])
+  }, [])
+
+  const handleNoteUpdated = useCallback((note: typeof notes[number]) => {
+    setNotes((prev) =>
+      prev.map((n) => (n.id === note.id ? { ...n, ...note } : n))
+    )
+  }, [])
+
+  const handleNoteDeleted = useCallback((noteId: string) => {
+    setNotes((prev) => prev.filter((n) => n.id !== noteId))
+  }, [])
+
   const parsedLearningPlan = task.learningPlan
     ? {
         ...task.learningPlan,
@@ -169,6 +186,14 @@ export function TaskDetail({ task }: TaskDetailProps) {
             </>
           ) : (
             <>
+              <Button
+                variant="outline"
+                className="hidden md:inline-flex"
+                onClick={() => setIsFloatingNoteOpen(true)}
+              >
+                <StickyNote className="mr-2 h-4 w-4" />
+                {tNotes('quickNotes')}
+              </Button>
               <Button variant="outline" onClick={() => setIsEditing(true)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 {tCommon('edit')}
@@ -305,7 +330,7 @@ export function TaskDetail({ task }: TaskDetailProps) {
             {tLearningPlan('title')}
           </TabsTrigger>
           <TabsTrigger value="notes">
-            {tNotes('title')} ({task.notes.length})
+            {tNotes('title')} ({notes.length})
           </TabsTrigger>
         </TabsList>
 
@@ -317,9 +342,25 @@ export function TaskDetail({ task }: TaskDetailProps) {
         </TabsContent>
 
         <TabsContent value="notes">
-          <NotesSection taskId={task.id} initialNotes={task.notes} />
+          <NotesSection
+            taskId={task.id}
+            notes={notes}
+            onNoteCreated={handleNoteCreated}
+            onNoteUpdated={handleNoteUpdated}
+            onNoteDeleted={handleNoteDeleted}
+          />
         </TabsContent>
       </Tabs>
+
+      {isFloatingNoteOpen && (
+        <FloatingNoteWindow
+          taskId={task.id}
+          notes={notes}
+          onClose={() => setIsFloatingNoteOpen(false)}
+          onNoteCreated={handleNoteCreated}
+          onNoteUpdated={handleNoteUpdated}
+        />
+      )}
     </div>
   )
 }
