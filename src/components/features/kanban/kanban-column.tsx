@@ -56,7 +56,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
       </div>
 
       <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
-        <div className="flex flex-1 flex-col gap-3">
+        <div className="flex max-h-[calc(100vh-14rem)] flex-1 flex-col gap-3 overflow-y-auto">
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
           ))}
