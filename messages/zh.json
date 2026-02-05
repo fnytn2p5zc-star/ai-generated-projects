@@ -73,6 +73,18 @@
     "results": "搜索结果",
     "inTask": "在任务中"
   },
+  "category": {
+    "title": "分类",
+    "all": "全部",
+    "create": "新建分类",
+    "edit": "编辑分类",
+    "delete": "删除分类",
+    "deleteConfirm": "删除这个分类？任务不会被删除。",
+    "name": "名称",
+    "color": "颜色",
+    "noCategories": "暂无分类",
+    "assignCategories": "分类"
+  },
   "settings": {
     "language": "语言",
     "theme": "主题",

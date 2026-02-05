@@ -23,7 +23,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LearningPlanEditor } from './learning-plan-editor'
 import { NotesSection } from '../notes/notes-section'
 import { FloatingNoteWindow } from '../notes/floating-note-window'
+import { CategoryPicker } from '../category/category-picker'
 import { cn } from '@/lib/utils'
+
+interface CategoryOnTask {
+  id: string
+  name: string
+  color: string
+}
 
 interface Task {
   id: string
@@ -50,6 +57,7 @@ interface Task {
     createdAt: Date
     updatedAt: Date
   }[]
+  categories: CategoryOnTask[]
 }
 
 interface TaskDetailProps {
@@ -76,7 +84,9 @@ export function TaskDetail({ task }: TaskDetailProps) {
   const tNotes = useTranslations('notes')
   const router = useRouter()
 
+  const tCategory = useTranslations('category')
   const [notes, setNotes] = useState(task.notes)
+  const [categories, setCategories] = useState<CategoryOnTask[]>(task.categories ?? [])
   const [isFloatingNoteOpen, setIsFloatingNoteOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -329,6 +339,30 @@ export function TaskDetail({ task }: TaskDetailProps) {
                     {t('dueDate')}: {new Date(task.dueDate).toLocaleDateString()}
                   </span>
                 )}
+                {categories.length > 0 && (
+                  <span className="text-muted-foreground">|</span>
+                )}
+                {categories.map((cat) => (
+                  <span
+                    key={cat.id}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                    style={{
+                      backgroundColor: `${cat.color}20`,
+                      color: cat.color,
+                    }}
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: cat.color }}
+                    />
+                    {cat.name}
+                  </span>
+                ))}
+                <CategoryPicker
+                  taskId={task.id}
+                  selectedCategories={categories}
+                  onCategoriesChanged={setCategories}
+                />
               </div>
               {task.description && (
                 <p className="whitespace-pre-wrap text-sm text-muted-foreground">

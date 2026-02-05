@@ -27,6 +27,12 @@ import { CreateTaskDialog } from '../task/create-task-dialog'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 
+interface CategoryOnTask {
+  id: string
+  name: string
+  color: string
+}
+
 type TaskWithRelations = {
   id: string
   title: string
@@ -39,6 +45,12 @@ type TaskWithRelations = {
   updatedAt: Date
   learningPlan: unknown | null
   notes: unknown[]
+  categories: CategoryOnTask[]
+}
+
+interface KanbanBoardProps {
+  categoryId?: string
+  onTasksChanged?: () => void
 }
 
 const customCollisionDetection: CollisionDetection = (args) => {
@@ -55,7 +67,7 @@ const customCollisionDetection: CollisionDetection = (args) => {
   return closestCenter(args)
 }
 
-export function KanbanBoard() {
+export function KanbanBoard({ categoryId, onTasksChanged }: KanbanBoardProps) {
   const t = useTranslations('task')
   const [tasks, setTasks] = useState<TaskWithRelations[]>([])
   const [activeTask, setActiveTask] = useState<TaskWithRelations | null>(null)
@@ -80,12 +92,12 @@ export function KanbanBoard() {
   )
 
   const loadTasks = useCallback(async () => {
-    const result = await getTasks()
+    const result = await getTasks(categoryId)
     if (result.success && result.data) {
       setTasks(result.data)
     }
     setIsLoading(false)
-  }, [])
+  }, [categoryId])
 
   useEffect(() => {
     loadTasks()
@@ -150,6 +162,7 @@ export function KanbanBoard() {
 
     await moveTask(activeId, newStatus, newPosition)
     await loadTasks()
+    onTasksChanged?.()
   }
 
   const getTasksByStatus = (status: TaskStatusType) => {
@@ -213,7 +226,10 @@ export function KanbanBoard() {
       <CreateTaskDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
-        onSuccess={loadTasks}
+        onSuccess={() => {
+          loadTasks()
+          onTasksChanged?.()
+        }}
       />
     </div>
   )

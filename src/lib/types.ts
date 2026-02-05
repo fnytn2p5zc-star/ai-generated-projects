@@ -60,8 +60,27 @@ export const learningPlanSchema = z.object({
   })).default([]),
 })
 
+export const createCategorySchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+  color: z.string().default('#6B7280'),
+})
+
+export const updateCategorySchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(100).optional(),
+  color: z.string().optional(),
+})
+
+export const updateTaskCategoriesSchema = z.object({
+  taskId: z.string(),
+  categoryIds: z.array(z.string()),
+})
+
 export type CreateTaskInput = z.infer<typeof createTaskSchema>
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>
 export type CreateNoteInput = z.infer<typeof createNoteSchema>
 export type UpdateNoteInput = z.infer<typeof updateNoteSchema>
 export type LearningPlanInput = z.infer<typeof learningPlanSchema>
+export type CreateCategoryInput = z.infer<typeof createCategorySchema>
+export type UpdateCategoryInput = z.infer<typeof updateCategorySchema>
+export type UpdateTaskCategoriesInput = z.infer<typeof updateTaskCategoriesSchema>

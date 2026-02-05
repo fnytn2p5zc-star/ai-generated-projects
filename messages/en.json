@@ -73,6 +73,18 @@
     "results": "Search Results",
     "inTask": "in task"
   },
+  "category": {
+    "title": "Categories",
+    "all": "All",
+    "create": "New Category",
+    "edit": "Edit Category",
+    "delete": "Delete Category",
+    "deleteConfirm": "Delete this category? Tasks will not be deleted.",
+    "name": "Name",
+    "color": "Color",
+    "noCategories": "No categories yet",
+    "assignCategories": "Categories"
+  },
   "settings": {
     "language": "Language",
     "theme": "Theme",

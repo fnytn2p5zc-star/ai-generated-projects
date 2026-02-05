@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server'
-import { KanbanBoard } from '@/components/features/kanban/kanban-board'
+import { BoardWithSidebar } from '@/components/features/kanban/board-with-sidebar'
 
 interface PageProps {
   params: Promise<{ locale: string }>
@@ -11,7 +11,7 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <div className="container py-6">
-      <KanbanBoard />
+      <BoardWithSidebar />
     </div>
   )
 }

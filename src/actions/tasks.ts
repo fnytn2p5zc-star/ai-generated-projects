@@ -10,9 +10,12 @@ import {
   type TaskStatusType,
 } from '@/lib/types'
 
-export async function getTasks() {
+export async function getTasks(categoryId?: string) {
   try {
     const tasks = await prisma.task.findMany({
+      where: categoryId
+        ? { categories: { some: { id: categoryId } } }
+        : undefined,
       orderBy: [{ status: 'asc' }, { position: 'asc' }, { createdAt: 'desc' }],
       include: {
         learningPlan: true,
@@ -20,6 +23,7 @@ export async function getTasks() {
           orderBy: { createdAt: 'desc' },
           take: 3,
         },
+        categories: true,
       },
     })
     return { success: true, data: tasks }
@@ -37,6 +41,7 @@ export async function getTask(id: string) {
         notes: {
           orderBy: { createdAt: 'desc' },
         },
+        categories: true,
       },
     })
 

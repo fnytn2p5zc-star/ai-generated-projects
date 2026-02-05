@@ -8,6 +8,12 @@ import { Link } from '@/i18n/routing'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
+interface CategoryOnTask {
+  id: string
+  name: string
+  color: string
+}
+
 interface Task {
   id: string
   title: string
@@ -16,6 +22,7 @@ interface Task {
   priority: string
   dueDate: Date | null
   position: number
+  categories?: CategoryOnTask[]
 }
 
 interface TaskCardProps {
@@ -92,6 +99,23 @@ export function TaskCard({ task, isDragging }: TaskCardProps) {
                 </span>
               )}
             </div>
+            {task.categories && task.categories.length > 0 && (
+              <div className="mt-2 flex items-center gap-1">
+                {task.categories.slice(0, 3).map((cat) => (
+                  <span
+                    key={cat.id}
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: cat.color }}
+                    title={cat.name}
+                  />
+                ))}
+                {task.categories.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground">
+                    +{task.categories.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </Link>

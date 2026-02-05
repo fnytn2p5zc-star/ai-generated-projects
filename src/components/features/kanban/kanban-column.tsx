@@ -17,6 +17,7 @@ interface Task {
   priority: string
   dueDate: Date | null
   position: number
+  categories?: { id: string; name: string; color: string }[]
 }
 
 interface KanbanColumnProps {
