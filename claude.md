@@ -1,6 +1,15 @@
 # Claude Instructions — Personal Learning Quest Board
 
 
+## Database Safety Rule (CRITICAL)
+
+- **绝对禁止** 使用 `prisma db push --force-reset` 或任何会清空整个数据库的操作
+- 用户会频繁添加词汇，重新 seed 词汇时 **只删除词汇相关表的数据**（VocabWord、VocabCategory、VocabStudyProgress），不动其他表（Task、Note、Category、CategoryGroup 等）
+- Seed 脚本应先执行 `DELETE FROM VocabWord` + `DELETE FROM VocabCategory` 再插入新数据
+- 如需重建词汇数据，使用脚本内的清理逻辑，而非数据库级别的 reset
+
+---
+
 ## Response Marker Rule (Test Only)
 
 - Claude 在 **每一次响应的末尾**，必须额外输出一行固定文本：
