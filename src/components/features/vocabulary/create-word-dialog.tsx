@@ -67,7 +67,7 @@ export function CreateWordDialog({
         meaning: meaning.trim(),
         phonetic: phonetic.trim() || null,
         exampleSentence: example.trim() || null,
-        language,
+        language: language as 'en' | 'ja',
         categoryId,
       })
 

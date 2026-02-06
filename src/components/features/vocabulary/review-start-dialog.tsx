@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from '@/i18n/routing'
+import type { LanguageCodeType } from '@/lib/vocab-types'
 import {
   Dialog,
   DialogContent,
@@ -44,6 +45,7 @@ export function ReviewStartDialog({
   selectedCategoryId,
 }: ReviewStartDialogProps) {
   const t = useTranslations('vocabulary.review')
+  const tCommon = useTranslations('common')
   const tLevels = useTranslations('vocabulary.levels')
   const router = useRouter()
   const [categoryId, setCategoryId] = useState(selectedCategoryId ?? 'all')
@@ -118,7 +120,7 @@ export function ReviewStartDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {tLevels('ALL') && 'Cancel'}
+            {tCommon('cancel')}
           </Button>
           <Button onClick={handleStart}>
             {t('startSession')}

@@ -49,7 +49,7 @@ export function CreateVocabCategoryDialog({
       const result = await createVocabCategory({
         name: name.trim(),
         nameZh: nameZh.trim(),
-        language,
+        language: language as 'en' | 'ja',
         color,
       })
 

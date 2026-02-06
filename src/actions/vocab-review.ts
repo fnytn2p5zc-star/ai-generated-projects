@@ -14,12 +14,9 @@ export async function getReviewWords(input: StartReviewSessionInput) {
     const validated = startReviewSessionSchema.parse(input)
     const now = new Date()
 
-    const wordWhere: Record<string, unknown> = {
-      language: validated.language,
-    }
-    if (validated.categoryId) {
-      wordWhere.categoryId = validated.categoryId
-    }
+    const wordWhere = validated.categoryId
+      ? { language: validated.language, categoryId: validated.categoryId }
+      : { language: validated.language }
 
     const levelFilter = validated.level !== 'ALL' ? validated.level : undefined
 
@@ -54,8 +51,8 @@ export async function getReviewWords(input: StartReviewSessionInput) {
 }
 
 function computeNextLevel(interval: number, streak: number): string {
-  if (interval >= 21 && streak >= 5) return 'MASTERED'
-  if (interval >= 3) return 'REVIEWING'
+  if (interval >= 21 && streak >= 4) return 'MASTERED'
+  if (interval >= 6) return 'REVIEWING'
   if (streak >= 1) return 'LEARNING'
   return 'NEW'
 }
@@ -73,7 +70,7 @@ export async function submitReview(input: SubmitReviewInput) {
     if (!existing) {
       const newStreak = validated.correct ? 1 : 0
       const newInterval = validated.correct ? 1 : 0
-      const newEase = validated.correct ? 2.6 : 2.3
+      const newEase = validated.correct ? 2.5 : 2.3
       const nextReview = new Date(now.getTime() + newInterval * 24 * 60 * 60 * 1000)
 
       const progress = await prisma.vocabStudyProgress.create({
@@ -105,7 +102,7 @@ export async function submitReview(input: SubmitReviewInput) {
       if (existing.interval === 0) {
         newInterval = 1
       } else if (existing.interval === 1) {
-        newInterval = 3
+        newInterval = 6
       } else {
         newInterval = Math.round(existing.interval * newEase)
       }
@@ -143,10 +140,9 @@ export async function submitReview(input: SubmitReviewInput) {
 
 export async function getVocabStats(language: string, categoryId?: string | null) {
   try {
-    const wordWhere: Record<string, unknown> = { language }
-    if (categoryId) {
-      wordWhere.categoryId = categoryId
-    }
+    const wordWhere = categoryId
+      ? { language, categoryId }
+      : { language }
 
     const totalWords = await prisma.vocabWord.count({ where: wordWhere })
 
