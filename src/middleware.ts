@@ -28,6 +28,10 @@ export default function middleware(request: NextRequest) {
   const authResponse = checkBasicAuth(request)
   if (authResponse) return authResponse
 
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    return NextResponse.next()
+  }
+
   return intlMiddleware(request)
 }
 
