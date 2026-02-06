@@ -40,7 +40,7 @@ interface Objective {
 interface Resource {
   title: string
   url?: string
-  type: 'article' | 'video' | 'book' | 'course' | 'other'
+  type: string
 }
 
 interface Milestone {
@@ -63,7 +63,7 @@ interface LearningPlanEditorProps {
   initialPlan: LearningPlan | null
 }
 
-const resourceTypes = ['article', 'video', 'book', 'course', 'other'] as const
+const resourceTypes = ['article', 'video', 'book', 'course', 'paper', 'other'] as const
 type ResourceType = (typeof resourceTypes)[number]
 
 export function LearningPlanEditor({
@@ -127,12 +127,29 @@ export function LearningPlanEditor({
     setObjectives(objectives.filter((_, i) => i !== index))
   }
 
-  const toggleObjective = (index: number) => {
-    setObjectives(
-      objectives.map((o, i) =>
-        i === index ? { ...o, completed: !o.completed } : o
-      )
+  const toggleObjective = async (index: number) => {
+    const previous = objectives
+    const updated = objectives.map((o, i) =>
+      i === index ? { ...o, completed: !o.completed } : o
     )
+
+    setObjectives(updated)
+
+    try {
+      const result = await upsertLearningPlan({
+        taskId,
+        objectives: updated,
+        resources,
+        milestones,
+      })
+      if (result.success) {
+        router.refresh()
+      } else {
+        setObjectives(previous)
+      }
+    } catch {
+      setObjectives(previous)
+    }
   }
 
   const addResource = () => {
@@ -160,7 +177,8 @@ export function LearningPlanEditor({
     setMilestones(milestones.filter((_, i) => i !== index))
   }
 
-  const toggleMilestone = (index: number) => {
+  const toggleMilestone = async (index: number) => {
+    const previous = milestones
     const milestone = milestones[index]
     const nowCompleted = !milestone.completed
 
@@ -169,16 +187,32 @@ export function LearningPlanEditor({
       setTimeout(() => setAnimatingMilestone(null), 1000)
     }
 
-    setMilestones(
-      milestones.map((m, i) => {
-        if (i !== index) return m
-        return {
-          ...m,
-          completed: nowCompleted,
-          completedAt: nowCompleted ? new Date().toISOString() : null,
-        }
+    const updated = milestones.map((m, i) => {
+      if (i !== index) return m
+      return {
+        ...m,
+        completed: nowCompleted,
+        completedAt: nowCompleted ? new Date().toISOString() : null,
+      }
+    })
+
+    setMilestones(updated)
+
+    try {
+      const result = await upsertLearningPlan({
+        taskId,
+        objectives,
+        resources,
+        milestones: updated,
       })
-    )
+      if (result.success) {
+        router.refresh()
+      } else {
+        setMilestones(previous)
+      }
+    } catch {
+      setMilestones(previous)
+    }
   }
 
   return (

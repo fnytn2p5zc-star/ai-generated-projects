@@ -20,7 +20,10 @@ interface GetReviewEntriesParams {
   period?: ReviewPeriod
   categoryId?: string
   type?: ReviewEntryType | 'all'
+  limit?: number
 }
+
+const MAX_ENTRIES = 50
 
 function getPeriodStartDate(period: ReviewPeriod): Date | null {
   if (period === 'all') return null
@@ -47,17 +50,30 @@ function getPeriodStartDate(period: ReviewPeriod): Date | null {
 }
 
 export async function getReviewEntries(params: GetReviewEntriesParams = {}) {
-  const { period = 'week', categoryId, type = 'all' } = params
+  const {
+    period = 'week',
+    categoryId,
+    type = 'all',
+    limit = MAX_ENTRIES,
+  } = params
 
   try {
     const periodStart = getPeriodStartDate(period)
     const entries: ReviewEntry[] = []
 
     if (type === 'all' || type === 'milestone') {
+      const planWhere: Record<string, unknown> = {}
+
+      if (categoryId) {
+        planWhere.task = { categories: { some: { id: categoryId } } }
+      }
+
+      if (periodStart) {
+        planWhere.updatedAt = { gte: periodStart }
+      }
+
       const plans = await prisma.learningPlan.findMany({
-        where: categoryId
-          ? { task: { categories: { some: { id: categoryId } } } }
-          : undefined,
+        where: Object.keys(planWhere).length > 0 ? planWhere : undefined,
         include: {
           task: {
             include: { categories: true },
@@ -111,6 +127,8 @@ export async function getReviewEntries(params: GetReviewEntriesParams = {}) {
 
       const doneTasks = await prisma.task.findMany({
         where: whereClause,
+        orderBy: { updatedAt: 'desc' },
+        take: limit,
         include: { categories: true },
       })
 
@@ -136,7 +154,7 @@ export async function getReviewEntries(params: GetReviewEntriesParams = {}) {
         new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
     )
 
-    return { success: true, data: sorted }
+    return { success: true, data: sorted.slice(0, limit) }
   } catch (error) {
     return { success: false, error: 'Failed to fetch review entries' }
   }

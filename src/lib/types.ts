@@ -53,13 +53,19 @@ export const learningPlanSchema = z.object({
   })).default([]),
   resources: z.array(z.object({
     title: z.string(),
-    url: z.string().url().optional(),
-    type: z.enum(['article', 'video', 'book', 'course', 'other']).default('other'),
+    url: z.preprocess(
+      (v) => (v === '' ? undefined : v),
+      z.string().url().optional()
+    ),
+    type: z.string().default('other'),
   })).default([]),
   milestones: z.array(z.object({
     title: z.string(),
     completed: z.boolean().default(false),
-    dueDate: z.string().datetime().optional().nullable(),
+    dueDate: z.preprocess(
+      (v) => (v === '' ? undefined : v),
+      z.string().datetime().optional().nullable()
+    ),
     completedAt: z.string().optional().nullable(),
   })).default([]),
 })
