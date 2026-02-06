@@ -137,13 +137,26 @@ export async function rebuildFTSIndex() {
   }
 }
 
+function sanitizeFtsQuery(query: string): string {
+  return query
+    .replace(/["*():^{}[\]\\]/g, '')
+    .split(/\s+/)
+    .filter((term) => term.length > 0)
+    .map((term) => `"${term}"*`)
+    .join(' ')
+}
+
 export async function searchWithFTS(query: string): Promise<SearchResult[]> {
   if (!query.trim()) {
     return []
   }
 
   try {
-    const ftsQuery = query.split(/\s+/).map((term) => `"${term}"*`).join(' ')
+    const ftsQuery = sanitizeFtsQuery(query)
+
+    if (!ftsQuery) {
+      return searchContent(query)
+    }
 
     const taskResults = await prisma.$queryRawUnsafe<
       Array<{

@@ -139,10 +139,21 @@ export function SearchPage() {
   )
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 function highlightQuery(text: string, query: string): string {
-  if (!query.trim()) return text
+  const safeText = escapeHtml(text)
+  if (!query.trim()) return safeText
 
   const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const regex = new RegExp(`(${escapedQuery})`, 'gi')
-  return text.replace(regex, '<mark class="bg-yellow-200 rounded">$1</mark>')
+  const safeEscapedQuery = escapeHtml(escapedQuery)
+  const regex = new RegExp(`(${safeEscapedQuery})`, 'gi')
+  return safeText.replace(regex, '<mark class="bg-yellow-200 rounded">$1</mark>')
 }
