@@ -70,5 +70,15 @@ export type CreateVocabCategoryInput = z.infer<typeof createVocabCategorySchema>
 export type UpdateVocabCategoryInput = z.infer<typeof updateVocabCategorySchema>
 export type CreateVocabWordInput = z.infer<typeof createVocabWordSchema>
 export type UpdateVocabWordInput = z.infer<typeof updateVocabWordSchema>
+export const searchVocabWordsSchema = z.object({
+  language: z.enum(['en', 'ja']),
+  categoryId: z.string().nullable().optional(),
+  search: z.string().max(200).optional(),
+  page: z.number().int().min(1).default(1),
+  pageSize: z.number().int().min(1).max(100).default(24),
+})
+
+export type SearchVocabWordsInput = z.infer<typeof searchVocabWordsSchema>
+
 export type StartReviewSessionInput = z.infer<typeof startReviewSessionSchema>
 export type SubmitReviewInput = z.infer<typeof submitReviewSchema>

@@ -151,6 +151,15 @@
     "categoryNameZh": "中文名称",
     "categoryColor": "颜色",
     "noCategories": "暂无分类",
+    "searchPlaceholder": "搜索单词...",
+    "wordCount": "{count} 个单词",
+    "noSearchResults": "没有匹配的单词",
+    "noSearchResultsDescription": "尝试不同的搜索词或清除筛选条件",
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "page": "第 {page} 页，共 {total} 页"
+    },
     "levels": {
       "NEW": "新词",
       "LEARNING": "学习中",

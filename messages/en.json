@@ -151,6 +151,15 @@
     "categoryNameZh": "Chinese Name",
     "categoryColor": "Color",
     "noCategories": "No categories yet",
+    "searchPlaceholder": "Search words...",
+    "wordCount": "{count} words",
+    "noSearchResults": "No matching words",
+    "noSearchResultsDescription": "Try a different search term or clear the filter",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {total}"
+    },
     "levels": {
       "NEW": "New",
       "LEARNING": "Learning",

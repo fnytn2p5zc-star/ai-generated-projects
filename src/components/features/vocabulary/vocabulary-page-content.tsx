@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -8,11 +8,12 @@ import { Button } from '@/components/ui/button'
 import { VocabCategorySidebar } from './vocab-category-sidebar'
 import { WordList } from './word-list'
 import { VocabStatsBar } from './vocab-stats-bar'
+import { VocabSearchBar } from './vocab-search-bar'
 import { CreateWordDialog } from './create-word-dialog'
 import { WordDetailDialog } from './word-detail-dialog'
 import { ReviewStartDialog } from './review-start-dialog'
 import { getVocabCategories } from '@/actions/vocab-categories'
-import { getVocabWords } from '@/actions/vocab-words'
+import { searchVocabWords } from '@/actions/vocab-words'
 import { getVocabStats } from '@/actions/vocab-review'
 
 interface VocabCategoryWithCount {
@@ -63,24 +64,41 @@ export function VocabularyPageContent() {
   const [isReviewStartOpen, setIsReviewStartOpen] = useState(false)
   const [selectedWord, setSelectedWord] = useState<WordWithProgress | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalWords, setTotalWords] = useState(0)
+  const fetchIdRef = useRef(0)
 
   const fetchData = useCallback(async () => {
+    const fetchId = ++fetchIdRef.current
+
     const [catResult, wordResult, statsResult] = await Promise.all([
       getVocabCategories(language),
-      getVocabWords(language, selectedCategoryId),
+      searchVocabWords({
+        language,
+        categoryId: selectedCategoryId,
+        search: searchQuery || undefined,
+        page: currentPage,
+        pageSize: 24,
+      }),
       getVocabStats(language, selectedCategoryId),
     ])
+
+    if (fetchId !== fetchIdRef.current) return
 
     if (catResult.success && catResult.data) {
       setCategories(catResult.data)
     }
     if (wordResult.success && wordResult.data) {
-      setWords(wordResult.data as WordWithProgress[])
+      setWords(wordResult.data.words as WordWithProgress[])
+      setTotalPages(wordResult.data.totalPages)
+      setTotalWords(wordResult.data.total)
     }
     if (statsResult.success && statsResult.data) {
       setStats(statsResult.data)
     }
-  }, [language, selectedCategoryId])
+  }, [language, selectedCategoryId, searchQuery, currentPage])
 
   useEffect(() => {
     fetchData()
@@ -89,7 +107,19 @@ export function VocabularyPageContent() {
   const handleLanguageChange = (value: string) => {
     setLanguage(value as 'en' | 'ja')
     setSelectedCategoryId(null)
+    setSearchQuery('')
+    setCurrentPage(1)
   }
+
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId)
+    setCurrentPage(1)
+  }
+
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query)
+    setCurrentPage(1)
+  }, [])
 
   const handleWordClick = (wordId: string) => {
     const word = words.find((w) => w.id === wordId) ?? null
@@ -127,6 +157,8 @@ export function VocabularyPageContent() {
 
       <VocabStatsBar stats={stats} onStartReview={() => setIsReviewStartOpen(true)} />
 
+      <VocabSearchBar onSearch={handleSearch} totalCount={totalWords} />
+
       <div className="flex gap-6">
         {/* Sidebar */}
         <div className={`shrink-0 transition-all ${sidebarOpen ? 'w-56' : 'w-0 overflow-hidden'}`}>
@@ -134,7 +166,7 @@ export function VocabularyPageContent() {
             categories={categories}
             language={language}
             selectedCategoryId={selectedCategoryId}
-            onSelectCategory={setSelectedCategoryId}
+            onSelectCategory={handleCategorySelect}
             onCategoriesChanged={fetchData}
           />
         </div>
@@ -152,6 +184,10 @@ export function VocabularyPageContent() {
           <WordList
             words={words}
             onWordClick={handleWordClick}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            isSearching={searchQuery.length > 0}
           />
         </div>
       </div>
