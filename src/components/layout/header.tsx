@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { LayoutDashboard, Search, Settings } from 'lucide-react'
+import { BookOpen, LayoutDashboard, Search, Settings, Trophy } from 'lucide-react'
 import { Link, usePathname } from '@/i18n/routing'
 import { LocaleSwitcher } from './locale-switcher'
 import { cn } from '@/lib/utils'
@@ -14,6 +14,8 @@ export function Header() {
   const navItems = [
     { href: '/', label: t('board'), icon: LayoutDashboard },
     { href: '/search', label: t('search'), icon: Search },
+    { href: '/vocabulary', label: t('vocabulary'), icon: BookOpen },
+    { href: '/review', label: t('review'), icon: Trophy },
     { href: '/settings', label: t('settings'), icon: Settings },
   ]
 

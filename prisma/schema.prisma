@@ -8,19 +8,18 @@ datasource db {
 }
 
 model Task {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  status      String        @default("TODO") // TODO, IN_PROGRESS, REVIEW, DONE
-  priority    String        @default("MEDIUM") // LOW, MEDIUM, HIGH
-  dueDate     DateTime?
-  position    Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  status       String        @default("TODO")
+  priority     String        @default("MEDIUM")
+  dueDate      DateTime?
+  position     Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   learningPlan LearningPlan?
   notes        Note[]
-  categories   Category[]
+  categories   Category[]    @relation("CategoryToTask")
 }
 
 model Category {
@@ -29,10 +28,10 @@ model Category {
   color     String         @default("#6B7280")
   position  Int            @default(0)
   groupId   String?
-  group     CategoryGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
-  tasks     Task[]
+  group     CategoryGroup? @relation(fields: [groupId], references: [id])
+  tasks     Task[]         @relation("CategoryToTask")
 }
 
 model CategoryGroup {
@@ -47,22 +46,75 @@ model CategoryGroup {
 model LearningPlan {
   id         String   @id @default(cuid())
   taskId     String   @unique
-  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  objectives String   @default("[]") // JSON array
-  resources  String   @default("[]") // JSON array
-  milestones String   @default("[]") // JSON array
+  objectives String   @default("[]")
+  resources  String   @default("[]")
+  milestones String   @default("[]")
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 model Note {
   id        String   @id @default(cuid())
   taskId    String
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   title     String
-  content   String   @default("") // Markdown content
+  content   String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@index([taskId])
+}
+
+model VocabCategory {
+  id        String      @id @default(cuid())
+  name      String
+  nameZh    String      @default("")
+  language  String
+  color     String      @default("#6B7280")
+  position  Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  words     VocabWord[]
+
+  @@unique([language, name])
+  @@index([language])
+}
+
+model VocabWord {
+  id              String              @id @default(cuid())
+  word            String
+  reading         String?
+  meaning         String
+  phonetic        String?
+  exampleSentence String?
+  language        String
+  categoryId      String
+  position        Int                 @default(0)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  category        VocabCategory       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  studyProgress   VocabStudyProgress?
+
+  @@index([language])
+  @@index([categoryId])
+}
+
+model VocabStudyProgress {
+  id             String    @id @default(cuid())
+  wordId         String    @unique
+  level          String    @default("NEW")
+  correctCount   Int       @default(0)
+  incorrectCount Int       @default(0)
+  streak         Int       @default(0)
+  easeFactor     Float     @default(2.5)
+  interval       Int       @default(0)
+  nextReviewAt   DateTime  @default(now())
+  lastReviewedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  word           VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@index([nextReviewAt])
+  @@index([level])
 }
