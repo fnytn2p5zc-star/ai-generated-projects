@@ -11,6 +11,7 @@ export function generateStaticParams() {
 }
 
 // FOUC prevention: must stay in sync with STORAGE_KEY in theme-provider.tsx
+// Also handles Safari BFCache: force reload when restored from back-forward cache
 const themeInitScript = `
 (function(){
   try {
@@ -24,6 +25,9 @@ const themeInitScript = `
       }
     }
   } catch(e) {}
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) { window.location.reload(); }
+  });
 })();
 `
 

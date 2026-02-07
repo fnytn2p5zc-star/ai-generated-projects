@@ -615,25 +615,36 @@
   }
 }
 
-/* Flashcard 3D flip */
+/* Flashcard 3D flip — Safari-safe: use translate3d to force GPU layer isolation */
 .flashcard-container {
+  -webkit-perspective: 1000px;
   perspective: 1000px;
 }
 
 .flashcard {
-  transition: transform 0.5s;
+  transition: transform 0.5s ease;
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .flashcard.flipped {
+  -webkit-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 
 .flashcard-front,
 .flashcard-back {
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+}
+
+.flashcard-front {
+  transform: rotateY(0deg) translate3d(0, 0, 1px);
 }
 
 .flashcard-back {
-  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg) translate3d(0, 0, 1px);
+  transform: rotateY(180deg) translate3d(0, 0, 1px);
 }
