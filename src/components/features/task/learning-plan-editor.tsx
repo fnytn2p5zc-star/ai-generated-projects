@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Plus, Trash2, ExternalLink, Check, Rocket } from 'lucide-react'
@@ -85,6 +85,13 @@ export function LearningPlanEditor({
   )
   const [isSaving, setIsSaving] = useState(false)
   const [animatingMilestone, setAnimatingMilestone] = useState<number | null>(null)
+  const animationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
+    }
+  }, [])
 
   const [newObjective, setNewObjective] = useState('')
   const [newResource, setNewResource] = useState<Resource>({
@@ -184,7 +191,8 @@ export function LearningPlanEditor({
 
     if (nowCompleted) {
       setAnimatingMilestone(index)
-      setTimeout(() => setAnimatingMilestone(null), 1000)
+      if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
+      animationTimerRef.current = setTimeout(() => setAnimatingMilestone(null), 1000)
     }
 
     const updated = milestones.map((m, i) => {

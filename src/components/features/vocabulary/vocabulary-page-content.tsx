@@ -73,30 +73,34 @@ export function VocabularyPageContent() {
   const fetchData = useCallback(async () => {
     const fetchId = ++fetchIdRef.current
 
-    const [catResult, wordResult, statsResult] = await Promise.all([
-      getVocabCategories(language),
-      searchVocabWords({
-        language,
-        categoryId: selectedCategoryId,
-        search: searchQuery || undefined,
-        page: currentPage,
-        pageSize: 24,
-      }),
-      getVocabStats(language, selectedCategoryId),
-    ])
+    try {
+      const [catResult, wordResult, statsResult] = await Promise.allSettled([
+        getVocabCategories(language),
+        searchVocabWords({
+          language,
+          categoryId: selectedCategoryId,
+          search: searchQuery || undefined,
+          page: currentPage,
+          pageSize: 24,
+        }),
+        getVocabStats(language, selectedCategoryId),
+      ])
 
-    if (fetchId !== fetchIdRef.current) return
+      if (fetchId !== fetchIdRef.current) return
 
-    if (catResult.success && catResult.data) {
-      setCategories(catResult.data)
-    }
-    if (wordResult.success && wordResult.data) {
-      setWords(wordResult.data.words as WordWithProgress[])
-      setTotalPages(wordResult.data.totalPages)
-      setTotalWords(wordResult.data.total)
-    }
-    if (statsResult.success && statsResult.data) {
-      setStats(statsResult.data)
+      if (catResult.status === 'fulfilled' && catResult.value.success && catResult.value.data) {
+        setCategories(catResult.value.data)
+      }
+      if (wordResult.status === 'fulfilled' && wordResult.value.success && wordResult.value.data) {
+        setWords(wordResult.value.data.words as WordWithProgress[])
+        setTotalPages(wordResult.value.data.totalPages)
+        setTotalWords(wordResult.value.data.total)
+      }
+      if (statsResult.status === 'fulfilled' && statsResult.value.success && statsResult.value.data) {
+        setStats(statsResult.value.data)
+      }
+    } catch {
+      // Prevent component crash on unexpected errors
     }
   }, [language, selectedCategoryId, searchQuery, currentPage])
 

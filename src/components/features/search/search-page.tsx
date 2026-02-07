@@ -36,8 +36,12 @@ export function SearchPage() {
     setIsLoading(true)
     try {
       const response = await fetch(
-        `/api/search?q=${encodeURIComponent(searchQuery)}`
+        `/api/search?q=${encodeURIComponent(searchQuery.slice(0, 200))}`
       )
+      if (!response.ok) {
+        setResults([])
+        return
+      }
       const data = await response.json()
 
       if (data.success) {
